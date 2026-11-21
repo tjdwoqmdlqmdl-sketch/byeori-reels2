@@ -5,7 +5,7 @@
 기획 문서(규칙 원본): claude.ai 프로젝트 문서 `claude/별이운세_릴스기획.md`
 
 ## 규칙
-- **24시간 안에 3편**: 매일 08:00 / 12:30 / 21:00 (KST)
+- **24시간 안에 3편**: 매일 08:00 / 12:30 / 21:00 (KST) + 사주툰 19:00 캐러셀 / 23:00 릴스
 - 15초, 2027 정미년 신년운세 기반, 매번 새 주제 (plan/backlog.md에서 고르고 사용 표시)
 - 첫 프레임부터 훅 문구 노출 (평균 시청 2~3초 → 이탈 방지)
 - 엔딩: 팔로우 + 프로필 링크 유도 (kit 기본값), 캡션 CTA는 build_day.py가 자동으로 붙임
@@ -14,13 +14,23 @@
 - 사주 근거는 plan/backlog.md의 십성·합충 표를 따른다. 확신 없는 주장은 쓰지 않는다
 - 게시가 끝난 영상(reels/<id>.mp4)은 저장소에서 삭제 (커버·posts json은 남김)
 
+## 사주툰 (매일 1화, 2026-11-21 추가)
+- 같은 화를 **19:00 캐러셀(6장) + 23:00 릴스(15초)** 두 형식으로 게시
+- 형식: 카톡 대화 드라마 → 별이 등장 "너 일간 뭐야?" → 사주 근거(근거표 그대로) → 반전 + "너라면? A vs B" 찬반 질문
+- 자극 포인트는 연애·직장 드라마, 반전, 찬반 논쟁. 공포·저주·불행 단정 금지. 특정 일간·띠를 비하하지 않기
+- 제작: plan/toon_epN.json 작성 → `cd kit && python3 -I toon_kit.py ../plan/toon_epN.json ..`
+  → toon/<id>_1~6.jpg, reels/<id>_reel.mp4, posts/<id>_carousel.json, posts/<id>_reel.json
+- 캐러셀 게시: instagram create_carousel_post(image_urls, caption) → create_comment
+- 릴스 게시: create_video_post(video_url, caption, thumb_offset 1000, share_to_feed true) → create_comment → reels/<id>_reel.mp4 삭제
+- 다음 화 아이디어: 회사에서 나만 빼고 승진?(경신금 관성) / 소개팅남이 "혹시 사주 봐요?" / 엄마가 점집 다녀와서 한 말 / 단톡방에서 나만 몰랐던 2027 / 통장에 잠자던 돈(재성)
+
 ## 매일 22:30 운영 (예약 메시지로 실행)
 1. **보고**: Windsor get_data (instagram)
    - 게시물: media_id, timestamp, media_type, media_views, media_reach, media_like_count, media_comments_count, media_saved, media_shares, media_reel_avg_watch_time (date_preset last_3dT)
    - 팔로워: followers_count / 댓글: comment_id, comment_text, comment_timestamp
    - 오늘 게시물 성과, 최고·최저 편, 평균 시청 시간, 팔로워 변화, 새 댓글 중 질문·불만·피드백, 게시 실패·오류를 SendUserMessage로 짧게 보고 + 내일 개선점 1~2개
    - 데이터는 Windsor 캐시라 몇 시간 늦을 수 있음을 감안
-2. **기획**: 다음 날 3슬롯 중 비어 있는 슬롯 수만큼 backlog에서 주제 선택 (전날 성과가 좋은 유형 우선)
+2. **기획**: 다음 날 사주툰 1화(plan/toon_epN.json) + 3슬롯 중 비어 있는 슬롯 수만큼 backlog에서 주제 선택 (전날 성과가 좋은 유형 우선)
 3. **제작**: plan/<다음날>.json 작성 → `cd kit && python3 -I build_day.py ../plan/<날짜>.json ..` (2개씩 병렬 가능: 4번째 인자로 id 지정)
    - 프레임 몇 장 뽑아 글자 넘침·겹침 확인
 4. **업로드**: reels/ covers/ posts/ plan/ 커밋 후 `git -c push.negotiate=true push origin HEAD:main`
