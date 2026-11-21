@@ -1,4 +1,4 @@
-"""리스트 릴스(스레드 글 화면형): python3 list_kit.py <list.json> <repo_dir>
+"""리스트 릴스(별이 브랜드 카드형, 캡처형 아님): python3 list_kit.py <list.json> <repo_dir>
 list.json: id, slot, title, items[str], note, caption_body, hashtags, comment
 출력: reels/<id>.mp4 (15초, 정지 카드 + 아주 느린 줌 + BGM), covers/<id>.jpg, posts/<id>.json
 좋아요·댓글 수 같은 가짜 반응 숫자나 인증 배지는 넣지 않는다.
@@ -27,31 +27,36 @@ def wrap(d, s, font, maxw):
     return out
 
 def card(s):
-    img = Image.new("RGB", (W, H), BGC); d = ImageDraw.Draw(img)
-    x0, y = 70, 300
-    av = Image.new("RGBA", (96, 96), (0, 0, 0, 0)); ImageDraw.Draw(av).ellipse([0, 0, 95, 95], fill=(196, 168, 240))
-    ch = CH["open"].copy(); ch.thumbnail((78, 78), Image.LANCZOS); av.paste(ch, (48 - ch.width // 2, 52 - ch.height // 2), ch)
-    m = Image.new("L", (96, 96), 0); ImageDraw.Draw(m).ellipse([0, 0, 95, 95], fill=255); img.paste(av, (x0, y), m)
-    d.text((x0 + 120, y + 30), "byeori.fortune_", font=FT("Bold", 40), fill=FG, anchor="lm")
-    d.text((x0 + 120, y + 74), "별이 운세 · 2027 정미년", font=FT("Medium", 30), fill=SUB, anchor="lm")
-    y += 160
-    tf = FT("Black", fit(d, s["title"], W - 2 * x0, "Black", 50))
-    for ln in wrap(d, s["title"], tf, W - 2 * x0): d.text((x0, y), ln, font=tf, fill=FG); y += 70
-    y += 30
-    f = FT("Medium", 40)
-    for i, it in enumerate(s["items"], 1):
-        lines = wrap(d, f"{i}. {it}", f, W - 2 * x0)
-        for j, ln in enumerate(lines): d.text((x0 + (0 if j == 0 else 44), y), ln, font=f, fill=FG); y += 58
-        y += 14
+    # 별이 브랜드 리스트 카드 (스레드 캡처형 아님): 라벤더 배경 + 분홍 태그 + 큰 제목 + 크림색 항목 카드 + 별이
+    from render import base, text, pill, put_char, YEL, WHITE, DARK
+    img = base(0.6); d = ImageDraw.Draw(img); x0 = 60
+    pill(img, W / 2, 170, 620, 92, (255, 112, 150)); text(img, (W / 2, 166), s.get("tag", "2027 정미년 · 별이 리스트"), 44, WHITE, DARK, 6)
+    title = s["title"].strip("<>")
+    tf = FT("Black", 76); lines = wrap(d, title, tf, W - 2 * x0)
+    y = 290
+    for i, ln in enumerate(lines):
+        text(img, (W / 2, y), ln, 76, YEL if i == len(lines) - 1 else WHITE, DARK, 11); y += 100
     y += 20
-    for ln in wrap(d, s["note"], FT("Medium", 32), W - 2 * x0): d.text((x0, y), ln, font=FT("Medium", 32), fill=SUB); y += 46
-    y += 40
-    d.rounded_rectangle([x0, y, W - x0, y + 150], 28, fill=(32, 26, 46))
-    d.text((W / 2, y + 48), "팔로우하면 매일 2027 운세 리스트", font=FT("Bold", 38), fill=ACC, anchor="mm")
-    d.text((W / 2, y + 104), "내 운세 티어는 프로필 링크 클릭!", font=FT("Bold", 36), fill=FG, anchor="mm")
-    assert y + 150 < H - 120, "글이 너무 길어요: 항목 수나 길이를 줄이세요"
-    d.text((W / 2, H - 70), "※ 재미로 보는 운세입니다 · 전통 사주 해석 기준", font=FT("Medium", 26), fill=SUB, anchor="mm")
-    return img
+    f = FT("Bold", 40)
+    for i, it in enumerate(s["items"], 1):
+        ls = wrap(d, it, f, W - 2 * x0 - 150); h = 58 * len(ls) + 44
+        d.rounded_rectangle([x0, y, W - x0, y + h], 32, fill=(255, 250, 238), outline=DARK, width=5)
+        cx, cy = x0 + 62, y + h / 2
+        d.ellipse([cx - 38, cy - 38, cx + 38, cy + 38], fill=(255, 112, 150), outline=DARK, width=4)
+        d.text((cx, cy - 2), str(i), font=FT("Black", 44), fill=WHITE, anchor="mm")
+        for j, ln in enumerate(ls): d.text((x0 + 130, y + 22 + j * 58), ln, font=f, fill=(40, 30, 60))
+        y += h + 18
+    y += 10
+    for ln in wrap(d, s["note"], FT("Bold", 32), W - 2 * x0):
+        d.text((W / 2, y + 20), ln, font=FT("Bold", 32), fill=(70, 40, 110), anchor="mm"); y += 46
+    y += 50
+    assert y < 1560, "글이 너무 길어요: 항목 수나 길이를 줄이세요"
+    pill(img, W / 2, 1620, 760, 110, (255, 112, 150)); text(img, (W / 2, 1616), "팔로우하고 다음 리스트 보기", 50, WHITE, DARK, 7)
+    pill(img, W / 2, 1745, 820, 96, (255, 250, 235)); text(img, (W / 2, 1741), "내 운세 티어는 프로필 링크 클릭!", 44, DARK, (255, 255, 255), 0)
+    put_char(img, "wink", 965, 1560, 190, rot=8)
+    d = ImageDraw.Draw(img)
+    d.text((W / 2, H - 60), "※ 재미로 보는 운세입니다 · 전통 사주 해석 기준", font=FT("Medium", 28), fill=WHITE, anchor="mm")
+    return img.convert("RGB")
 
 def build(s, repo):
     rid = s["id"]
