@@ -52,6 +52,12 @@
 - 대화 우선: 매일 운영 때 우리 글에 달린 답글을 확인하고 create_reply로 답하기 (근거표 기반 한 줄, 매번 다른 문장, 홍보 문구 반복 X). 다른 사람 글에는 답글 불가(API 제한)
 - 프로필 링크 언급은 가끔만. 인스타 홍보 문구 남발 금지
 
+## 주간 띠별·별자리 운세 (주 1회씩, 2026-11-21 추가)
+- 매주 월요일 07:00 띠별 운세 캐러셀, 17:30 별자리 운세 캐러셀 (5장씩)
+- 근거는 계산으로: 띠별 = 그 주 일진과 띠의 육합·삼합(행운)/충(조심), 별자리 = 매일 달의 별자리와 같은 원소(행운)/정반대(조심). 지어낸 운세 문장 금지
+- 제작: 일요일 22:30 운영에서 `cd kit && python3 -I week_kit.py tti <다음 월요일> <월 07:00 ISO> ..` / `... star <다음 월요일> <월 17:30 ISO> ..` → posts/week_*_MMDD.json, 게시 메시지는 캐러셀 형식
+- 예정: 11/23 주(예약 완료), 11/30 주(11/29 일요일 운영에서 제작)
+
 ## 매일 22:30 운영 (예약 메시지로 실행)
 1. **보고**: Windsor get_data (instagram)
    - 게시물: media_id, timestamp, media_type, media_views, media_reach, media_like_count, media_comments_count, media_saved, media_shares, media_reel_avg_watch_time (date_preset last_3dT)
