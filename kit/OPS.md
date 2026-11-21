@@ -5,7 +5,7 @@
 기획 문서(규칙 원본): claude.ai 프로젝트 문서 `claude/별이운세_릴스기획.md`
 
 ## 규칙
-- **24시간 안에 3편**: 매일 08:00 / 12:30 / 21:00 (KST) + 사주툰 19:00 캐러셀 / 23:00 릴스
+- **24시간 안에 3편**: 매일 08:00 / 12:30 / 21:00 (KST) + 일간 TMI 15:30 캐러셀 + 사주툰 19:00 캐러셀 / 23:00 릴스
 - 15초, 2027 정미년 신년운세 기반, 매번 새 주제 (plan/backlog.md에서 고르고 사용 표시)
 - 첫 프레임부터 훅 문구 노출 (평균 시청 2~3초 → 이탈 방지)
 - 엔딩: 팔로우 + 프로필 링크 유도 (kit 기본값), 캡션 CTA는 build_day.py가 자동으로 붙임
@@ -30,13 +30,20 @@
   - 예: 고부갈등 → 임수·계수 여자(丁=재성 시어머니, 未=관성 남편) / 공 가로채는 동기 → 병화(丁=겁재)·무토(未=겁재) / 숨 막히는 상사 → 경금·신금(丁=관성), 임수·계수(未=관성) / 연애 → 관성(여)·재성(남)
 - 다음 화 아이디어: 남친 폰 사진첩의 낯선 여자(반전: 여동생 결혼식 준비) / 팀장이 내 기획안을 자기 이름으로 발표 / 소개팅남 첫 질문이 "사주 봐도 돼요?" / 단톡방에서 나만 빠진 여행 / 전 직장 동료가 보낸 '너 그거 알아?' / 엄마가 점집 다녀와서 한 충격 발언
 
+## 일간 TMI 캐러셀 (매일 1편 15:30, 2026-11-21 추가)
+- 형식: 4장 캐러셀 (표지 / 1~5 / 6~10 / "너는 몇 번이야? 맞으면 O 아니면 X" + 팔로우·프로필 링크)
+- **다른 계정 글을 그대로 옮기거나 문장만 바꿔 베끼지 말 것.** 형식만 참고하고, 내용은 일간 상징(물상)·십성으로 직접 쓴다
+- 탄별 주제 예: 일간 성격 TMI / 일간별 연애할 때 모습 / 일간별 화났을 때 / 일간별 돈 쓰는 스타일 / 일간별 회사에서 캐릭터 / 일간별 2027 한 줄 / 일간별 친구로 두면 좋은 점 / 일간별 썸 탈 때 티 나는 행동
+- 제작: plan/tmi_NN.json → `cd kit && python3 -I tmi_kit.py ../plan/tmi_NN.json ..` → posts/tmi_NN.json
+- 게시: create_carousel_post(image_urls, caption) → create_comment
+
 ## 매일 22:30 운영 (예약 메시지로 실행)
 1. **보고**: Windsor get_data (instagram)
    - 게시물: media_id, timestamp, media_type, media_views, media_reach, media_like_count, media_comments_count, media_saved, media_shares, media_reel_avg_watch_time (date_preset last_3dT)
    - 팔로워: followers_count / 댓글: comment_id, comment_text, comment_timestamp
    - 오늘 게시물 성과, 최고·최저 편, 평균 시청 시간, 팔로워 변화, 새 댓글 중 질문·불만·피드백, 게시 실패·오류를 SendUserMessage로 짧게 보고 + 내일 개선점 1~2개
    - 데이터는 Windsor 캐시라 몇 시간 늦을 수 있음을 감안
-2. **기획**: 다음 날 사주툰 1화(plan/toon_epN.json) + 3슬롯 중 비어 있는 슬롯 수만큼 backlog에서 주제 선택 (전날 성과가 좋은 유형 우선)
+2. **기획**: 다음 날 일간 TMI 1편(plan/tmi_NN.json) + 사주툰 1화(plan/toon_epN.json) + 3슬롯 중 비어 있는 슬롯 수만큼 backlog에서 주제 선택 (전날 성과가 좋은 유형 우선)
 3. **제작**: plan/<다음날>.json 작성 → `cd kit && python3 -I build_day.py ../plan/<날짜>.json ..` (2개씩 병렬 가능: 4번째 인자로 id 지정)
    - 프레임 몇 장 뽑아 글자 넘침·겹침 확인
 4. **업로드**: reels/ covers/ posts/ plan/ 커밋 후 `git -c push.negotiate=true push origin HEAD:main`
