@@ -61,7 +61,7 @@
 3. **제작**: plan/<다음날>.json 작성 → `cd kit && python3 -I build_day.py ../plan/<날짜>.json ..` (2개씩 병렬 가능: 4번째 인자로 id 지정)
    - 프레임 몇 장 뽑아 글자 넘침·겹침 확인
 4. **업로드**: reels/ covers/ posts/ plan/ 커밋 후 `git -c push.negotiate=true push origin HEAD:main`
-5. **게시 예약**: 슬롯마다 send_later (아래 게시 메시지 형식)
+5. **게시 예약**: 슬롯마다 send_later (아래 게시 메시지 형식). 예약은 짧은 시간에 10개 정도까지만 만들어져서 한도에 걸리면 30초 쉬고 이어서
 6. **문서 갱신**: backlog 사용 표시(push), 프로젝트 문서의 게시 계획 갱신
 7. **다음 운영 예약**: 마지막 운영(12/03 22:30) 전까지 다음 날 22:30에 같은 운영 메시지 send_later. 12/04 22:30에는 2주 종합 보고만.
 
