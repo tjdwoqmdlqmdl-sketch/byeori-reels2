@@ -37,15 +37,16 @@ def card(s):
     for i, ln in enumerate(lines):
         text(img, (W / 2, y), ln, 76, YEL if i == len(lines) - 1 else WHITE, DARK, 11); y += 100
     y += 20
-    f = FT("Bold", 40)
+    many = len(s["items"]) > 6
+    f = FT("Bold", 34 if many else 40); lh, pad, gap = (48, 26, 10) if many else (58, 44, 18)
     for i, it in enumerate(s["items"], 1):
-        ls = wrap(d, it, f, W - 2 * x0 - 150); h = 58 * len(ls) + 44
+        ls = wrap(d, it, f, W - 2 * x0 - 150); h = lh * len(ls) + pad
         d.rounded_rectangle([x0, y, W - x0, y + h], 32, fill=(255, 250, 238), outline=DARK, width=5)
-        cx, cy = x0 + 62, y + h / 2
-        d.ellipse([cx - 38, cy - 38, cx + 38, cy + 38], fill=(255, 112, 150), outline=DARK, width=4)
-        d.text((cx, cy - 2), str(i), font=FT("Black", 44), fill=WHITE, anchor="mm")
-        for j, ln in enumerate(ls): d.text((x0 + 130, y + 22 + j * 58), ln, font=f, fill=(40, 30, 60))
-        y += h + 18
+        cx, cy = x0 + 62, y + h / 2; rr = 30 if many else 38
+        d.ellipse([cx - rr, cy - rr, cx + rr, cy + rr], fill=(255, 112, 150), outline=DARK, width=4)
+        d.text((cx, cy - 2), str(i), font=FT("Black", 36 if many else 44), fill=WHITE, anchor="mm")
+        for j, ln in enumerate(ls): d.text((x0 + 130, y + pad / 2 + j * lh), ln, font=f, fill=(40, 30, 60))
+        y += h + gap
     y += 10
     for ln in wrap(d, s["note"], FT("Bold", 32), W - 2 * x0):
         d.text((W / 2, y + 20), ln, font=FT("Bold", 32), fill=(70, 40, 110), anchor="mm"); y += 46
